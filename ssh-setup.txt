@@ -6,7 +6,10 @@ ssh-keygen
 Host github.com
   HostName github.com
   User git
-  IdentityFile ~/.ssh/id_rsa
+  IdentityFile ~/.ssh/id_ed25519
+  ControlMaster auto
+  ControlPath ~/.ssh/control-%h-%p-%r
+  ControlPersist 10m
 
 # *) in case of copied files
 chmod 700 ~/.ssh && chmod 600 ~/.ssh/* && chmod 644 -f ~/.ssh/*.pub ~/.ssh/authorized_keys ~/.ssh/known_hosts

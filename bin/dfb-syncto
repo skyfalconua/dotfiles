@@ -50,7 +50,6 @@ cmd_subcmd() {
 }
 
 _check_control_path() {
-  echo "_check_control_path"
   if [ -n "$SSH_CONTROL_PATH" ]; then
     export controlpath="-o ControlPath=$SSH_CONTROL_PATH"
     return
