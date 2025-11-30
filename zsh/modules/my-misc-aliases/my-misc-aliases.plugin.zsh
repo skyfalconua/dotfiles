@@ -191,6 +191,10 @@ if is-darwin; then
   fi
 fi
 
+if is-msys; then
+  alias pac="dfb-msys2-pac"
+fi
+
 # _alvim() {
 #   alacritty --title nvim --working-directory $(pwd) -e $SHELL -lc "nvim"
 # }

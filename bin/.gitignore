@@ -2,7 +2,8 @@
 !.gitignore
 !dfb-firefox-backup
 !dfb-git-add-token
-!dfb-vscode-include
-!dfb-syncto
 !dfb-git-split-generated
+!dfb-msys2-pac
+!dfb-syncto
 !dfb-video-to-mp4
+!dfb-vscode-include

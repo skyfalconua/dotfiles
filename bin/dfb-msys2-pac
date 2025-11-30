@@ -1,0 +1,315 @@
+#!/bin/bash
+
+# based on https://github.com/bbedward/pac-pacman-aliases
+
+SCRIPT_VERSION="master"
+
+### pac - A wrapper for pacman, yay, and paru with apt-like usage and bash globbing pattern search instead of regex.
+
+if ! command -v pacman &> /dev/null; then
+    echo "pacman is not installed or not in the PATH. This script requires pacman to run."
+    exit 1
+fi
+
+# Detect if paru or yay is installed and set the AUR_HELPER variable accordingly
+AUR_HELPER=""
+if command -v paru > /dev/null; then
+    AUR_HELPER="paru"
+elif command -v yay > /dev/null; then
+    AUR_HELPER="yay"
+fi
+
+# To translate -y option to --noconfirm for pacman and yay
+NOCONFIRM=""
+AURNOCONFIRM=""
+
+TEMP_ARGS=()
+REMOVE_OPTION="-R"
+for arg in "$@"; do
+    case $arg in
+        -y|--yes)
+            NOCONFIRM="--noconfirm"
+            if [[ $AUR_HELPER == "paru" ]]; then
+                AURNOCONFIRM="--noconfirm"
+            else
+                AURNOCONFIRM="--noconfirm --answerdiff None --answerclean None --mflags \"--noconfirm\""
+            fi
+            ;;
+        --purge)
+            # Translate --purge to pacman and yay options
+            REMOVE_OPTION="-Rns"
+            ;;
+        *)
+            TEMP_ARGS+=("$arg")
+            ;;
+    esac
+done
+set -- "${TEMP_ARGS[@]}"
+
+# Prompt for sudo if not already root
+SUDO=""
+prompt_for_sudo() {
+    if [[ $(id -u) -ne 0 ]]; then
+        if [[ -n "$AURNOCONFIRM" ]]; then
+            SUDO="sudo"
+            # Ensure we have sudo privileges without user interaction
+            if ! sudo -v; then
+                echo "Failed to obtain sudo privileges."
+                exit 1
+            fi
+            return # Skip the rest of the function
+        fi
+       SUDO="sudo"
+        echo "This action requires root privileges. Do you want to proceed? (Y/n)"
+        read -r answer
+       case "${answer,,}" in
+            y|yes|"")
+                if ! sudo -v; then
+                    echo "Failed to obtain sudo privileges."
+                    exit 1
+                fi
+                ;;
+            *)
+                echo "Operation cancelled."
+                exit 1
+                ;;
+        esac
+    fi
+}
+
+# Install pacman-contrib for dependency checking
+check_and_install_pactree() {
+    if ! command -v pactree &> /dev/null; then
+        echo "pacman-contrib is not installed, but required for this command."
+        # Prompt the user to install pactree
+        read -p "Would you like to install pacman-contrib? (y/N) " response
+        if [[ "$response" =~ ^[yY](es|ES)?$ ]]; then
+            if ! sudo pacman -S $NOCONFIRM pacman-contrib; then
+                echo "Failed to install pacman-contrib. Exiting."
+                exit 1
+            fi
+            echo ""
+        else
+            echo "pacman-contrib installation skipped. Exiting."
+            exit 1
+        fi
+    fi
+}
+
+# Error helper
+# Verify argument exists
+error_and_exit() {
+    local error_type="$1"
+    case "$error_type" in
+        search)
+            echo "Error: Must specify a search term."
+            ;;
+        *)
+            echo "Error: '$1' requires at least one argument."
+            ;;
+    esac
+    exit 1
+}
+
+# Print help
+help() {
+    cat <<EOF
+Usage: pac <command> [options]
+
+Commands:
+    upgrade                         Upgrade all installed packages
+    install <pkg>                   Install a new package
+    remove <pkg>                    Remove an installed package
+           --purge                  Remove package and its configuration files
+    autoremove                      Remove unneeded packages
+    clean                           Clean the package cache
+    autoclean                       Remove old versions of installed packages
+    list --installed                Lists all installed packages
+         --manual                   Lists all manually installed packages
+         --upgradable               Lists all upgradable packages
+         --all                      Lists all available packages
+    search <query>                  Search the package database
+    show <pkg>                      Show detailed package information
+    find <binary>                   Find a package by binary name
+    depends <pkg>                   Shows a list of dependencies for <package>
+    rdepends <pkg>                  Shows a list of packages that depend on <package>
+    local-install <pkg>             Install a local package file (.pkg.tar.zst)
+    aur search <query>              Search in the AUR
+    aur install <pkg>               Install a package from the AUR
+    aur upgrade                     Upgrade AUR packages
+
+Options:
+    -y                              Answer yes to all questions
+    --version                       Show the version of pac
+EOF
+}
+
+if [[ "$1" == "--help" ]]; then
+    help
+    exit 0
+fi
+
+### Primary command handler
+case "$1" in
+    --version)
+        echo "pac v$SCRIPT_VERSION"
+    ;;
+    update)
+        echo "Please use 'upgrade' instead of 'update'."
+        echo "Partial updates are not recommended on arch-based systems."
+        echo "See https://wiki.archlinux.org/title/System_maintenance#Partial_upgrades_are_unsupported"
+        exit 1
+    ;;
+    upgrade|dist-upgrade)
+        prompt_for_sudo
+        $SUDO pacman -Syu $NOCONFIRM
+    ;;
+    local-install)
+        shift
+        if [ $# -eq 0 ]; then
+            echo "Error: 'install-local' requires at least one .pkg.tar.zst file as an argument."
+            exit 1
+        fi
+        # Array to hold valid package files
+        local_packages=()
+        for pkg in "$@"; do
+            if [[ $pkg != *.pkg.tar.zst ]]; then
+                echo "Error: All arguments to 'install-local' must be .pkg.tar.zst files. Invalid argument: $pkg"
+                exit 1
+            else
+                local_packages+=("$pkg")
+            fi
+        done
+        if [ ${#local_packages[@]} -eq 0 ]; then
+            echo "Error: No valid .pkg.tar.zst files provided to 'install-local'."
+            exit 1
+        fi
+        prompt_for_sudo
+        $SUDO pacman -U "${local_packages[@]}" $NOCONFIRM
+    ;;
+    install)
+        shift
+        if [ $# -eq 0 ]; then
+            error_and_exit "install"
+        fi
+        prompt_for_sudo
+        $SUDO pacman -S "$@" $NOCONFIRM
+    ;;
+    remove)
+        shift
+        if [ $# -eq 0 ]; then
+            error_and_exit "remove"
+        fi
+        prompt_for_sudo
+        $SUDO pacman $REMOVE_OPTION "$@" $NOCONFIRM
+    ;;
+    autoremove)
+        prompt_for_sudo
+        $SUDO pacman -Rs $(pacman -Qtdq) $NOCONFIRM
+    ;;
+    clean)
+        prompt_for_sudo
+        $SUDO pacman -Scc $NOCONFIRM
+    ;;
+    autoclean)
+        prompt_for_sudo
+        $SUDO pacman -Rns $(pacman -Qtdq $NOCONFIRM) $NOCONFIRM
+    ;;
+    list)
+        if [[ "$2" == "--installed" ]]; then
+            pacman -Q
+        elif [[ "$2" == "--manual" ]]; then
+            pacman -Qm
+        elif [[ "$2" == "--upgradable" ]]; then
+            pacman -Qu
+        elif [[ "$2" == "--all" ]]; then
+            pacman -Sl
+        else
+            echo "Unsupported list operation: $2"
+            echo "Supported operations: --installed, --manual, --upgradable, --all"
+            exit 1
+        fi
+    ;;
+    search)
+        shift
+        if [ $# -eq 0 ]; then
+            error_and_exit "search"
+        fi
+        # Check if the input contains common regex patterns
+        if [[ "$@" =~ [\^\$\.\|\(\)\[\]\{\}\+\] ]]; then
+            # Input likely contains regex, don't convert
+            pattern="$@"
+        else
+            # Input likely a glob pattern, convert to regex
+            pattern=$(echo "$@" | sed 's/\*/.*/g;s/\?/./g')
+        fi
+        pacman -Ss "$pattern"
+    ;;
+    show)
+        shift
+        if [ $# -eq 0 ]; then
+            error_and_exit "show"
+        fi
+        pacman -Si "$@"
+    ;;
+    find)
+        shift
+        if [ $# -eq 0 ]; then
+            error_and_exit "find"
+        fi
+        pacman -F "$@"
+    ;;
+    depends)
+        shift
+        if [ $# -eq 0 ]; then
+            error_and_exit "depends"
+        fi
+        check_and_install_pactree
+        pactree -s -d1 -o1 "$@"
+        ;;
+    rdepends)
+        shift
+        if [ $# -eq 0 ]; then
+            error_and_exit "rdepends"
+        fi
+        check_and_install_pactree
+        pactree -r -s -d1 -o1 "$@"
+        ;;
+    aur|--aur)
+        if [[ -z "$AUR_HELPER" ]]; then
+            echo "No AUR helper found. Please install yay or paru."
+            exit 1
+        fi
+        shift # Remove 'aur' from arguments
+        case "$1" in
+            search)
+                shift
+                if [ $# -eq 0 ]; then
+                    error_and_exit "search"
+                fi
+                $AUR_HELPER -Ssa "$@"
+                ;;
+            install)
+                shift
+                if [ $# -eq 0 ]; then
+                    error_and_exit "install"
+                fi
+                $AUR_HELPER -S "$@" $AURNOCONFIRM
+                ;;
+            upgrade)
+                if [[ $AUR_HELPER == "paru" ]]; then
+                    $AUR_HELPER -Sua $AURNOCONFIRM
+                else
+                    $AUR_HELPER $AURNOCONFIRMF
+                fi
+                ;;
+            *)
+                echo "Invalid aur operation: $1"
+                exit 1
+                ;;
+        esac
+        ;;
+    *)
+        help
+        exit 1
+esac
