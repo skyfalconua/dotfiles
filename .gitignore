@@ -2,6 +2,7 @@
 /.vscode
 
 .DS_Store
+.zcompdump
 
 /zsh/.zprezto
 /zsh/.zsh_history
