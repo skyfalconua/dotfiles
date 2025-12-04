@@ -45,7 +45,8 @@ fi
 
 if command-exists fzf; then
   export FZF_COMPLETION_TRIGGER='~~'
-  source <(fzf --zsh)
+  # --zsh option is only available in version >= 0.48.0
+  source <(fzf --zsh 2>/dev/null)
 
   _fzf_comprun() {
     local command=$1
