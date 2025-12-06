@@ -15,10 +15,13 @@ alias rgg="rg -g '!**/generated/**'"
 
 alias podps="podman ps --format 'table {{.Image}}\t{{.Ports}}\t{{.Status}}\t{{.Names}}'"
 alias deno-file-server="deno run -A jsr:@std/http/file-server"
+alias npm-lsglobal="npm list --global --depth 0"
 alias qr8="qrencode -t ANSI256UTF8"
 alias mc="command mc --nosubshell"
 alias gitt="gitui --watcher"
 alias syncto="dfb-syncto"
+alias uvp="uv run poe"
+alias m="micro"
 alias y="yazi"
 
 podman-machine-update() {
