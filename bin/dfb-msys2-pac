@@ -49,6 +49,13 @@ set -- "${TEMP_ARGS[@]}"
 # Prompt for sudo if not already root
 SUDO=""
 prompt_for_sudo() {
+    # not required for msys2
+    case "$OSTYPE" in
+      msys*|cygwin)
+        return 0
+        ;;
+    esac
+
     if [[ $(id -u) -ne 0 ]]; then
         if [[ -n "$AURNOCONFIRM" ]]; then
             SUDO="sudo"
