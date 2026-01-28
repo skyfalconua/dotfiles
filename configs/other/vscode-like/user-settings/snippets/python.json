@@ -16,10 +16,8 @@
 	"Write to stderr": {
 		"prefix": "werr",
 		"body": [
-			"import sys; sys.stderr.write('\\n\\n $1 = ' + str([",
-      "  $1",
-      "])[1:-1] + '\\n\\n')"
-			
+      "def w(*a, c=[0]): c[0]+=1; import sys; sys.stderr.write('  \\033[31m:>:\\033[0m $1 \\033[31m%s\\033[0m %s\\n' % (c, ' '.join(repr(b) for b in a))) # noqa",
+      "w($1)"
 		],
 		"description": "Log output to console"
 	}

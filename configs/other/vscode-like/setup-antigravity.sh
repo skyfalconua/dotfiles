@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# -- read parameters -- -- --
+
 REPLACE=""
 
 for i in "$@"; do
@@ -9,11 +11,27 @@ for i in "$@"; do
   esac
 done
 
+# -- get userdir -- -- --
+
+userdir=""
+
 case "$(uname -s)" in
   Darwin) userdir="$HOME/Library/Application Support/Antigravity/User" ;;
   # Linux)  jetbrains_dir="$HOME/.config/..." ;;
-  *)      echo "only osx is supported"; exit ;;
+  *) ;;
 esac
+
+if command -v cygpath >/dev/null 2>&1; then
+   userprofile=$(cygpath "$USERPROFILE")
+   userdir="$userprofile/AppData/Roaming/Antigravity/User"
+fi
+
+if [ -z "$userdir" ]; then
+  echo "userdir is not found"
+  exit
+fi
+
+# -- copy files -- -- --
 
 mkdir -p "$userdir"
 

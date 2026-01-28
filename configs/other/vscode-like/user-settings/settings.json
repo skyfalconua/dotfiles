@@ -32,6 +32,10 @@
   "[vue]": {
     "editor.defaultFormatter": "Vue.volar"
   },
+  "[python]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
 
   "breadcrumbs.enabled": true,
   "command-runner.commands": {
@@ -155,8 +159,5 @@
   "workbench.iconTheme": "material-icon-theme",
   "workbench.layoutControl.enabled": false,
   "workbench.productIconTheme": "material-product-icons",
-  "workbench.startupEditor": "none",
-
-  "makefile.configureOnOpen": false,
-  "djlint.showInstallError": false
+  "workbench.startupEditor": "none"
 }
