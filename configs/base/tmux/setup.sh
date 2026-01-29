@@ -1,5 +1,8 @@
 #!/bin/sh
-set -euo pipefail
+if ! command -v tmux &>/dev/null; then
+  echo "Tmux is not installed, skipping"
+  exit
+fi
 
 function version {
   echo "$1" | awk -F. '{ printf("%04d%04d%04d%04d", $1,$2,$3,$4); }'

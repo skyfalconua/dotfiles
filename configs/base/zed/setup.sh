@@ -1,8 +1,15 @@
 #!/bin/sh
-mkdir -p "$HOME/.config/zed"
+if command -v cygpath &>/dev/null; then
+  appdata=$(cygpath "$APPDATA")
+  zdir="$appdata/Zed"
+else
+  zdir="$HOME/.config/zed"
+fi
+
+mkdir -p "$zdir"
 
 cpzed() {
-  local to="$HOME/.config/zed/$1"
+  local to="$zdir/$1"
   cp -f "$(pwd)/$1" $to
   echo "Created $to"
 }

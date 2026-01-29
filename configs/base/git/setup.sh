@@ -9,14 +9,15 @@ echo_gitconfig() {
     | sed -e "s#__NAME__#${name}#"
 }
 
-_git_to="$HOME/.gitconfig"
-echo_gitconfig > $_git_to
-echo "Created $_git_to"
+gitto="$HOME/.gitconfig"
+echo_gitconfig > $gitto
+echo "Created $gitto"
 
 # copy on Windows
-_git_userprofile=$(env | grep USERPROFILE | cut -d '=' -f 2)
-if [ ! $_git_userprofile = "" ]; then
-  _git_to="$_git_userprofile\\.gitconfig"
-  echo_gitconfig > $_git_to
-  echo "Created $_git_to"
+if command -v cygpath &>/dev/null; then
+  userprofile=$(cygpath "$USERPROFILE")
+  gitto="$userprofile\\.gitconfig"
+
+  echo_gitconfig > $gitto
+  echo "Created $gitto"
 fi

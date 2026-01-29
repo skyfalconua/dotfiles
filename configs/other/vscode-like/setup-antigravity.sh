@@ -21,9 +21,9 @@ case "$(uname -s)" in
   *) ;;
 esac
 
-if command -v cygpath >/dev/null 2>&1; then
-   userprofile=$(cygpath "$USERPROFILE")
-   userdir="$userprofile/AppData/Roaming/Antigravity/User"
+if command -v cygpath &>/dev/null; then
+  appdata=$(cygpath "$APPDATA")
+  userdir="$appdata/Antigravity/User"
 fi
 
 if [ -z "$userdir" ]; then

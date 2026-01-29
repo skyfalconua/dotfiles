@@ -1,6 +1,13 @@
 #!/bin/sh
-mkdir -p "$HOME/.config/gitui"
+if command -v cygpath &>/dev/null; then
+  appdata=$(cygpath "$APPDATA")
+  confdir="$appdata/gitui"
+else
+  confdir="$HOME/.config/gitui"
+fi
 
-to="$HOME/.config/gitui/key_bindings.ron"
+mkdir -p "$confdir"
+
+to="$confdir/key_bindings.ron"
 cp -f "$(pwd)/key_bindings.ron" $to
 echo "Created $to"

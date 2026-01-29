@@ -164,7 +164,7 @@ kill-by-grep() {
 
 if is-linux; then
   open() {
-    (xdg-open "$1" &> /dev/null &)
+    (xdg-open "$1" &>/dev/null &)
   }
 fi
 
@@ -203,6 +203,11 @@ fi
 
 if is-msys; then
   alias pac="dfb-msys2-pac"
+
+  open() {
+    # pacman -S cygutils
+    (cygstart "$1" &>/dev/null &)
+  }
 fi
 
 # _alvim() {
