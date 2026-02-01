@@ -7,13 +7,72 @@
 // custom settings, run the `open default settings` command
 // from the command palette or from `Zed` application menu.
 {
+  // -- -- ssh -- -- -- --
+
+  "ssh_connections": [],
+
+  // -- -- agents -- -- -- --
+  // Details about premium requests
+  //   https://docs.github.com/en/copilot/concepts/billing/copilot-requests
+
+  "features": {
+    "edit_prediction_provider": "none",
+    // "edit_prediction_provider": "copilot",
+  },
+  "edit_predictions": {
+    "mode": "subtle",
+  },
+  "context_servers": {},
+  "agent": {
+    "favorite_models": [
+      {
+        "provider": "copilot_chat",
+        "model": "gpt-5-mini", // 0x
+      },
+      {
+        "provider": "copilot_chat",
+        "model": "gpt-5.1-codex-mini", // 0.33x
+      },
+      {
+        "provider": "copilot_chat",
+        "model": "claude-haiku-4.5", // 0.33x
+      },
+      {
+        "provider": "copilot_chat",
+        "model": "claude-sonnet-4.5",
+      },
+      {
+        "provider": "copilot_chat",
+        "model": "claude-opus-4.5", // 3x
+      },
+      {
+        "provider": "copilot_chat",
+        "model": "gemini-3-flash-preview", // 0.33x
+      },
+    ],
+    "inline_assistant_model": {
+      "provider": "copilot_chat",
+      "model": "gpt-5-mini",
+    },
+    "default_model": {
+      "provider": "copilot_chat",
+      "model": "gpt-5-mini",
+    },
+    "message_editor_min_lines": 8,
+    "dock": "left",
+    "button": true,
+    "profiles": {},
+  },
+
+  // -- -- basic settigs -- -- -- --
+
   "theme": "JetBrains New Dark",
   "icon_theme": "Material Icon Theme",
   "base_keymap": "SublimeText",
 
   "buffer_font_size": 16,
   "buffer_font_family": "Cascadia Code NF",
-  "buffer_line_height": {"custom": 1.3},
+  "buffer_line_height": { "custom": 1.3 },
   "tab_size": 2,
   "preferred_line_length": 80,
   "soft_wrap": "none",
@@ -27,64 +86,53 @@
   "remove_trailing_whitespace_on_save": true,
 
   "tabs": {
-    "file_icons": true
+    "file_icons": true,
   },
   "project_panel": {
-    "indent_size": 12
+    "indent_size": 12,
   },
   "indent_guides": {
     "enabled": true,
     "coloring": "fixed",
-    "background_coloring": "indent_aware"
+    "background_coloring": "indent_aware",
   },
 
   // disable panels and buttons
   "show_call_status_icon": false,
   "tab_bar": {
     "show": true,
-    "show_nav_history_buttons": false
+    "show_nav_history_buttons": false,
   },
   "collaboration_panel": {
-    "button": false
-  },
-  "chat_panel": {
-    "button": "never"
+    "button": false,
   },
   "notification_panel": {
-    "button": false
-  },
-  "features": {
-    "edit_prediction_provider": "none",
-    "copilot": false
-  },
-  "assistant": {
     "button": false,
-    "version": "2"
   },
   "toolbar": {
     "breadcrumbs": false,
-    "quick_actions": false
+    "quick_actions": false,
   },
   "terminal": {
     "button": false,
     "detect_venv": "off",
     "toolbar": {
-      "title": false,
-      "breadcrumbs": false
-    }
+      "breadcrumbs": false,
+    },
   },
   "git": {
     "inline_blame": {
-      "enabled": false
-    }
+      "enabled": false,
+    },
   },
   "telemetry": {
     "diagnostics": false,
-    "metrics": false
+    "metrics": false,
   },
 
   // extensions
   "auto_install_extensions": {
+    "astro": true,
     "fish": true,
     "git-firefly": true,
     "html": true,
@@ -93,11 +141,15 @@
     "lua": true,
     "make": true,
     "material-icon-theme": true,
+    "mcp-server-github": true,
     "new-darcula": true,
     "nginx": true,
     "nu": true,
+    "opencode": true,
+    "powershell": true,
     "tmux": true,
     "toml": true,
-    "zig": true
-  }
+    "xml": true,
+    "zig": true,
+  },
 }

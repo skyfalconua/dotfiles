@@ -61,7 +61,7 @@ mo() {
 
 path-remove() {
   local pth=":$PATH"    # add leading colon
-  pth=${pth//":$1"/""}  # now each path starts with colon
+  pth=${pth//":$1"/""}  # remove path prefixed with colon
   PATH="${pth#:}"       # remove leading colon
 }
 
@@ -171,7 +171,7 @@ fi
 if is-darwin; then
   alias dequarantine="xattr -d com.apple.quarantine"
 
-  tarnx() {
+  tar() {
     COPYFILE_DISABLE=1 command tar --no-xattrs $@
   }
 
