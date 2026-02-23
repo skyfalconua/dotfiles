@@ -9,6 +9,12 @@ find . -name "*.zsh" | xargs dos2unix -f
 find . -name "*.sh" | xargs dos2unix -f
 ```
 
+### debug zsh
+```sh
+  brew install moreutils
+  zsh -xv 2>&1 | ts -i "%.s" > zsh_startup.log
+```
+
 ### fix permissions
 ```sh
 autoload -Uz compinit

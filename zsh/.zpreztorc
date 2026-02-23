@@ -25,10 +25,10 @@ _preztomodules=(
   'prompt'                    # loads prompt themes
 
   # my modules
-  'my-scm-branch'
-  'my-misc-aliases'
-  'my-base-config'
-  'my-sdks-and-helpers'
+  'my1-misc-aliases'
+  'my2-base-config'
+  'my3-sdks-and-helpers'
+  'my4-scm-branch'
 
   # default and contrib modules
   'python'

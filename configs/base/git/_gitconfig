@@ -38,8 +38,9 @@
   stfz = "! f() { git st | fzf --height 40% --border --layout=reverse | awk '{print $2}'; } ; f"
   brfz = "! f() { git branch --format='%(refname:short)' | fzf --height 40% --border --layout=reverse; } ; f"
   cofz = "! f() { git checkout `git brfz`; } ; f"
-  feor = "! f() {  git fetch origin $1:$1; } ; f"
+  feor = "! f() { git fetch origin $1:$1; } ; f"
   push-su = "! f() { git push --set-upstream origin `git branch-name`; } ; f"
+  supto = "! f() { local b=`git branch-name`; git branch --set-upstream-to=\"origin/$b\" \"$b\"; } ; f"
   resn = "! f() { local n; read -p 'Enter number of commits to reset: ' num; if [ -n \"$num\" ]; then git reset HEAD~$num; git hist; fi; } ; f"
 
   hist = log --pretty='%C(yellow)%h%C(reset) %C(green)%ci%C(reset) %s %C(cyan)%an%C(reset)'
@@ -50,6 +51,8 @@
   last-release = "! git branch | grep 'release/' | tail -n1 |  tr -d '*' | tr -d ' '"
   last-commit = "! echo `git log -1 --pretty='%H'`"
   last-files = "! f() { git log ${1-'-1'} --name-only --pretty='format:' | sort | uniq | sed -e '/^$/d' ;} ; f"
+
+  gc-now = "! f() { git reflog expire --expire=now --all; git gc --prune=now --aggressive; } ; f"
 
   tui = "! gitui --watcher"
 

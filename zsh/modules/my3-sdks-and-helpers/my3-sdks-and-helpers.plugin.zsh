@@ -19,6 +19,44 @@
 #   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 # fi
 
+
+# -- -- setup n node version manager -- -- -- --
+
+if [ -n "${N_PREFIX}" ]; then
+  path-prepend "${N_PREFIX}/bin"
+fi
+
+nuse() {
+  if [ -z "${N_PREFIX}" ]; then
+    echo "nuse: N_PREFIX is not set" && return
+  fi
+  local versions="${N_PREFIX}/n/versions/node"
+
+  local version="$1"
+  if [ -z "${version}" ]; then
+    version=` ls "${versions}" | fzf`
+  fi; if [ -z "${version}" ]; then
+    echo "nuse: usage: nuse <version>" && return
+  fi
+
+  local newver="${versions}/${version}"
+  if [ ! -d "${newver}" ]; then
+    echo "nuse: version '${newver}' not found in ${versions}" && return
+  fi
+
+  local current="$(command -v node 2>/dev/null)"
+  if [ -n "${current}" ]; then
+    local bindir="$(dirname "${current}")"
+    # Only remove the current node if it was added via nuse
+    case "${bindir}" in
+      "${N_PREFIX}/"*) path-remove "${bindir}" ;;
+    esac
+  fi
+
+  path-prepend "${newver}/bin"
+  echo "nuse: now using node ${version}"
+}
+
 # -- -- fix pyenv -- -- -- --
 
 if command-exists pyenv; then

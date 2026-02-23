@@ -162,6 +162,14 @@ kill-by-grep() {
   ps aux | grep "$process_name" | grep -v grep | awk '{print $2}' | xargs kill -9
 }
 
+rsng() {
+  if [ $# -lt 2 ]; then
+    echo "Usage: rsng <src> <dst> [any-rsync-option]" && return
+  fi
+  rsync --archive --recursive --update --perms \
+    --compress --verbose --progress --exclude='.git/' "$@"
+}
+
 if is-linux; then
   open() {
     (xdg-open "$1" &>/dev/null &)
