@@ -27,6 +27,12 @@ alias uvp="uv run poe"
 alias m="micro"
 alias y="yazi"
 
+if command -v watchexec &>/dev/null; then
+  alias syncto="dfb-syncto-watchexec"
+elif command -v entr &>/dev/null; then
+  alias syncto="dfb-syncto-entr"
+fi
+
 podman-machine-update() {
   if [ -z "$1" ]; then
     echo "usage: podman-machine-update x.y"

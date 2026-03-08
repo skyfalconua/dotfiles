@@ -27,25 +27,31 @@ cmd_subcmd() {
 
   if _has_empty "$subcmd" "$thisdir" "$to"; then return; fi
 
-  local cmd=""
-  local filename=""
+  if ! _ends_with "${to}" ":"; then
+    to="$to/"
+  fi
 
   if [ "$subcmd" = "_scp" ]; then _check_control_path; fi
 
+  local cmd=""
+  if [ "$subcmd" = "_scp" ]; then
+    cmd="scp $controlpath"
+  elif [ "$subcmd" = "_docker" ]; then
+    cmd="docker cp"
+  elif [ "$subcmd" = "_kubectl" ]; then
+    cmd="kubectl $SYNCTO_KUBECTL_PARAMS cp"
+  fi
+
+  local filename=""
   while read filename; do
     filename=`echo $filename | sed -e "s#^$thisdir/##g"`
 
-    if [ "$subcmd" = "_scp" ]; then
-      cmd="scp $controlpath $filename $to/$filename"
-    elif [ "$subcmd" = "_docker" ]; then
-      cmd="docker cp $filename $to/$filename"
-    elif [ "$subcmd" = "_kubectl" ]; then
-      cmd="kubectl $SYNCTO_KUBECTL_PARAMS cp $filename $to/$filename"
-    fi
+    cmd="$cmd $filename $to$filename"
+    echo && echo "$cmd" && eval "$cmd"
 
-    echo
-    echo "$cmd"
-    eval "$cmd"
+    if [ -n "${SYNCTO_AFTER}" ]; then
+      $SHELL "${SYNCTO_AFTER}" "SYNCTO_AFTER" "${filename}" "$to"
+    fi
   done < /dev/stdin
 }
 
@@ -80,6 +86,10 @@ _one_of() {
     if [ "$var" = "$x" ]; then return 0; fi
   done
   return 1
+}
+
+_ends_with() {
+  [ "${1%$2}" != "$1" ]
 }
 
 if _one_of "$1" "_scp" "_docker" "_kubectl"; then

@@ -4,6 +4,7 @@
 !dfb-git-add-token
 !dfb-git-split-generated
 !dfb-msys2-pac
-!dfb-syncto
+!dfb-syncto-entr
+!dfb-syncto-watchexec
 !dfb-video-to-mp4
 !dfb-vscode-include

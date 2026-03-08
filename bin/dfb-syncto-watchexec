@@ -1,0 +1,99 @@
+#!/bin/sh
+# note: see fish version here - fish/misc/syncto.fish
+
+cmd_main() {
+  local cmd="$1" # scp | docker | kubectl
+  local from="$2"
+  local to="$3"
+
+  if _has_empty "$cmd" "$from" "$to" || ! _one_of "$cmd" "scp" "docker" "kubectl"; then
+    echo 'Usage: syncto scp|docker|kubectl <local-dir> <remote>:<root-path>'
+    echo
+    return
+  fi
+
+  echo "Syncing \"$from\" to \"$to\" via \"$cmd\"..."
+  local thisdir=`pwd`
+
+  cd "$from" && watchexec --shell=none --only-emit-events --emit-events-to=stdio \
+    --fs-events modify | $SHELL "$0" "_$cmd" "$thisdir" "$to"
+}
+
+cmd_subcmd() {
+  local subcmd="$1" # _scp | _docker | _kubectl
+  local thisdir="$2"
+  local to="$3"
+
+  if _has_empty "$subcmd" "$thisdir" "$to"; then return; fi
+
+  if ! _ends_with "${to}" ":"; then
+    to="$to/"
+  fi
+
+  if [ "$subcmd" = "_scp" ]; then _check_control_path; fi
+
+  local cmd=""
+  if [ "$subcmd" = "_scp" ]; then
+    cmd="scp $controlpath"
+  elif [ "$subcmd" = "_docker" ]; then
+    cmd="docker cp"
+  elif [ "$subcmd" = "_kubectl" ]; then
+    cmd="kubectl $SYNCTO_KUBECTL_PARAMS cp"
+  fi
+
+  local filename=""
+  while read filename; do
+    filename=`echo $filename | sed -e "s#modify:$thisdir/##g"`
+    if [ -z "$filename" ]; then continue; fi
+
+    cmd="$cmd $filename $to$filename"
+    echo && echo "$cmd" && eval "$cmd"
+
+    if [ -n "${SYNCTO_AFTER}" ]; then
+      $SHELL "${SYNCTO_AFTER}" "SYNCTO_AFTER" "${filename}" "$to"
+    fi
+  done < /dev/stdin
+}
+
+_check_control_path() {
+  if [ -n "$SSH_CONTROL_PATH" ]; then
+    export controlpath="-o ControlPath=$SSH_CONTROL_PATH"
+    return
+  fi
+
+  echo
+  echo 'Recomendation to speed up upload via scp:'
+  echo
+  echo '  Login in a first shell and share connection:'
+  echo '    ssh -o ControlPath=~/.ssh/some-shared -o ControlMaster=auto -o ControlPersist=9999 some.host'
+  echo
+  echo '  Then in a second shell set this parameter before run:'
+  echo '    export SSH_CONTROL_PATH="~/.ssh/some-shared"'
+  echo '    syncto some/path some.host:/remote/path'
+  echo
+}
+
+_has_empty() {
+  for var in "$@"; do
+    if [ -z "$var" ]; then return 0; fi
+  done
+  return 1
+}
+
+_one_of() {
+  local x="$1"; shift
+  for var in "$@"; do
+    if [ "$var" = "$x" ]; then return 0; fi
+  done
+  return 1
+}
+
+_ends_with() {
+  [ "${1%$2}" != "$1" ]
+}
+
+if _one_of "$1" "_scp" "_docker" "_kubectl"; then
+  cmd_subcmd $@
+else
+  cmd_main $@
+fi
