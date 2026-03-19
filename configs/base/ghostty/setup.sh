@@ -1,6 +1,6 @@
 #!/bin/sh
 mkdir -p "$HOME/.config/ghostty"
 
-to="$HOME/.config/ghostty/config"
-cp -f "$(pwd)/config" $to
+to="$HOME/.config/ghostty/config.ghostty"
+cp -f "$(pwd)/config.ghostty" $to
 echo "Created $to"

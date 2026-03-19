@@ -1,5 +1,7 @@
 #!/bin/sh
 
+APPNAME="Code"
+
 # -- read parameters -- -- --
 
 REPLACE=""
@@ -16,14 +18,14 @@ done
 userdir=""
 
 case "$(uname -s)" in
-  Darwin) userdir="$HOME/Library/Application Support/Code/User" ;;
-  # Linux)  jetbrains_dir="$HOME/.config/..." ;;
+  Darwin) userdir="$HOME/Library/Application Support/$APPNAME/User" ;;
+  # Linux)  userdir="$HOME/.config/..." ;;
   *) ;;
 esac
 
 if command -v cygpath &>/dev/null; then
   appdata=$(cygpath "$APPDATA")
-  userdir="$appdata/Code/User"
+  userdir="$appdata/$APPNAME/User"
 fi
 
 if [ -z "$userdir" ]; then
@@ -45,4 +47,9 @@ else
 fi
 
 cp -rf ./user-settings/* "${userdir}"
+
+# for ext in $(cat "./extensions.txt"); do
+#   todo --install-extension "$ext"
+# done
+
 echo "Created '${userdir}' ${REPLACE}"

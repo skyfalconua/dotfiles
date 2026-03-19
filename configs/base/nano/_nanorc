@@ -1,9 +1,7 @@
-set morespace
 set multibuffer
 #set nohelp            # perhaps comment out until comfortable
 set quickblank
 set regexp
-set smooth
 set tabsize 2
 
 unbind ^K main
@@ -22,7 +20,6 @@ bind ^P prevword main
 bind ^N nextword main
 bind ^B firstline main
 bind ^E lastline main
-bind ^L curpos main
 bind ^J gotoline main
 
 bind ^Space mark main

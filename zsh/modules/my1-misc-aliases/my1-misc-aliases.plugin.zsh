@@ -22,7 +22,6 @@ alias qr8="qrencode -t ANSI256UTF8"
 alias mc="command mc --nosubshell"
 alias gitt="gitui --watcher"
 alias bmk="bash makefile.sh"
-alias syncto="dfb-syncto"
 alias uvp="uv run poe"
 alias m="micro"
 alias y="yazi"
@@ -174,6 +173,16 @@ rsng() {
   fi
   rsync --archive --recursive --update --perms \
     --compress --verbose --progress --exclude='.git/' "$@"
+}
+
+jt() {
+  if [ -f "$1" ]; then
+    cd "$(dirname "$1")"
+  elif [ -d "$1" ]; then
+    cd "$1"
+  else
+    printf 'jt: no such file or directory: %s\n' "$1"
+  fi
 }
 
 if is-linux; then

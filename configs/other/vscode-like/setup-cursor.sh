@@ -1,6 +1,6 @@
 #!/bin/sh
 
-APPNAME="Antigravity"
+APPNAME="Cursor"
 
 # -- read parameters -- -- --
 
