@@ -54,6 +54,7 @@ nuse() {
   fi
 
   path-prepend "${newver}/bin"
+  export N_USE_VERSION="${version}"
   echo "nuse: now using node ${version}"
 }
 

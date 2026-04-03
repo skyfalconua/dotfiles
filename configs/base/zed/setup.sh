@@ -6,7 +6,7 @@ else
   zdir="$HOME/.config/zed"
 fi
 
-mkdir -p "$zdir"
+mkdir -p "$zdir/themes"
 
 cpzed() {
   local to="$zdir/$1"
@@ -14,5 +14,7 @@ cpzed() {
   echo "Created $to"
 }
 
+cpzed "themes/my-mixed-theme.json"
 cpzed "settings.json"
 cpzed "keymap.json"
+

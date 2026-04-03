@@ -7,8 +7,18 @@ fi
 prompt_mytheme_precmd() {
   python-info
 
+  local pver=""
+  if [ -n "${python_info[virtualenv]}" ]; then
+    pver="Ᵽ${python_info[virtualenv]}"
+  fi
+
+  local nver=""
+  if [ -n "$N_USE_VERSION" ]; then
+    nver="₦($N_USE_VERSION) "
+  fi
+
   PROMPT=""
-  PROMPT+="${_mythemerosettamarker}${python_info[virtualenv]}"
+  PROMPT+="${_mythemerosettamarker}${pver}${nver}"
   PROMPT+="${_mythemeusercolor}%n%F{reset_color}:%F{green}%M%F{reset_color%}:%F{cyan}%~%F{reset_color}"
   PROMPT+=" $(_git_or_hg_branch)"
   PROMPT+="

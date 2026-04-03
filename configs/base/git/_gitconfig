@@ -55,6 +55,7 @@
   gc-now = "! f() { git reflog expire --expire=now --all; git gc --prune=now --aggressive; } ; f"
   ee = "! $EDITOR .git/info/exclude"
   ec = "! $EDITOR .git/config"
+  cc = "! cat .git/config"
   tui = "! gitui --watcher"
 
 
