@@ -97,13 +97,13 @@ bind-key C-p previous-window
 ###########################################################################
 # Pane management / navigation
 
-# Vertical splits with v or C-v
+# Add vertical (right) split with v or C-v
 unbind v
 unbind C-v
 bind-key v split-window -h -c "#{pane_current_path}"
 bind-key C-v split-window -h -c "#{pane_current_path}"
 
-# Horizontal split with h or C-h
+# Add horizontal (bottom) split with h or C-h
 unbind h
 unbind C-h
 bind-key h split-window -v -c "#{pane_current_path}"

@@ -1,0 +1,167 @@
+local wezterm = require 'wezterm'
+local act     = wezterm.action
+
+-- Utils -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+local function array_merge(t1, t2)
+  local result = {}
+  for _, value in ipairs(t1) do table.insert(result, value) end
+  for _, value in ipairs(t2) do table.insert(result, value) end
+  return result
+end
+
+-- Base config -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+local config = {}
+if wezterm.config_builder then
+  config = wezterm.config_builder()
+end
+
+config.color_scheme         = 'PaulMillr'
+config.default_cursor_style = 'SteadyBar'
+config.font                 =
+    wezterm.font_with_fallback { 'Cascadia Code NF', 'JetBrains Mono' }
+config.font_size            = 18
+
+config.max_fps       = 120
+config.animation_fps = 120
+
+config.window_frame = {
+  border_left_width = '0',
+  border_right_width = '0',
+  border_bottom_height = '0',
+  border_top_height = '0',
+}
+
+-- Tab bar -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- - -
+
+config.quit_when_all_windows_are_closed = true
+config.hide_tab_bar_if_only_one_tab     = false
+config.tab_bar_at_bottom                = false
+config.use_fancy_tab_bar                = false
+
+local function tab_title(tab_info)
+  local title = tab_info.tab_title
+  if title and #title > 0 then
+    return title
+  end
+  return tab_info.active_pane.title
+end
+
+wezterm.on(
+  'format-tab-title',
+  function(tab)
+    local background = '#5F87AF'
+    local foreground = '#000000'
+    if tab.is_active then
+      background = '#005F00'
+      foreground = '#FFFFFF'
+    end
+
+    local edge_background = '#444444'
+    local edge_foreground = '#FFFFFF'
+
+    local title_prefix = ' '
+    if tab.is_active then
+      title_prefix = '❱ '
+    end
+    local title = title_prefix .. tab_title(tab) .. ' '
+
+    return {
+      { Background = { Color = edge_background } },
+      { Foreground = { Color = edge_foreground } },
+      { Text = ' ' },
+
+      { Background = { Color = background } },
+      { Foreground = { Color = foreground } },
+      { Text = title },
+
+      { Background = { Color = edge_background } },
+      { Foreground = { Color = edge_foreground } },
+      { Text = '' },
+    }
+  end
+)
+
+wezterm.on(
+  'update-status',
+  function(window)
+    window:set_left_status(wezterm.format {
+      { Text = ' ⛋  ' },
+    })
+    window:set_right_status(wezterm.format {
+      { Text = ' | ' .. wezterm.hostname() .. ' ' },
+    })
+  end
+)
+
+-- Key bindings -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
+
+-- Add horizontal (bottom) split
+local SplitPaneDown = act.SplitVertical
+-- Add vertical (right) split
+local SplitPaneRight = act.SplitHorizontal
+
+local base_keys = {
+  -- Unbind / disable defaults
+  { key = 'w', mods = 'CMD',            action = act.DisableDefaultAssignment },
+  { key = 'q', mods = 'CMD',            action = act.DisableDefaultAssignment },
+  { key = 'h', mods = 'CMD',            action = act.DisableDefaultAssignment },
+  { key = 'h', mods = 'CTRL|SHIFT',     action = act.DisableDefaultAssignment },
+  { key = 'r', mods = 'CMD',            action = act.DisableDefaultAssignment },
+
+  -- Native WezTerm actions
+  { key = 'n', mods = 'CMD|SHIFT',      action = act.SpawnWindow },
+
+  -- Add vertical (right) split
+  { key = '"', mods = 'CTRL|ALT|SHIFT', action = act.DisableDefaultAssignment },
+  { key = "'", mods = 'CTRL|ALT|SHIFT', action = act.DisableDefaultAssignment },
+  { key = '"', mods = 'CTRL|ALT',       action = act.DisableDefaultAssignment },
+
+  -- Add horizontal (bottom) split
+  { key = '%', mods = 'CTRL|ALT|SHIFT', action = act.DisableDefaultAssignment },
+  { key = '5', mods = 'CTRL|ALT|SHIFT', action = act.DisableDefaultAssignment },
+  { key = '%', mods = 'CTRL|ALT',       action = act.DisableDefaultAssignment },
+}
+
+-- tmux passthrough (Ctrl-B = \x02 prefix)
+local tmux_keys = {
+  { key = 't',          mods = 'CMD',        action = act.SendString '\x02t' }, -- new tmux window
+  { key = 'w',          mods = 'CTRL|SHIFT', action = act.SendString '\x02w' }, -- close surface
+  { key = 'q',          mods = 'CTRL|SHIFT', action = act.SendString '\x02q' }, -- close tab/session
+  { key = 'h',          mods = 'CMD|SHIFT',  action = act.SendString '\x02h' }, -- horizontal split
+  { key = 'v',          mods = 'CMD|SHIFT',  action = act.SendString '\x02v' }, -- vertical split
+  { key = '.',          mods = 'CMD',        action = act.SendString '\x02.' }, -- move tab to index
+  { key = ',',          mods = 'CMD',        action = act.SendString '\x02,' }, -- rename tab
+  { key = 'LeftArrow',  mods = 'CMD',        action = act.SendString '\x02p' }, -- prev tab
+  { key = 'RightArrow', mods = 'CMD',        action = act.SendString '\x02n' }, -- next tab
+  { key = '[',          mods = 'CMD',        action = act.SendString '\x02[' }, -- next tab
+  { key = ']',          mods = 'CMD',        action = act.SendString '\x02]' }, -- next tab
+}
+
+-- native keys
+local RenameTab = act.PromptInputLine {
+  description = 'Enter new name for tab:',
+  action = wezterm.action_callback(function(window, pane, line)
+    if line then
+      window:active_tab():set_title(line)
+    end
+  end),
+}
+local native_keys = {
+  { key = 't',          mods = 'CMD',        action = act.SpawnTab 'CurrentPaneDomain' },
+  { key = 'w',          mods = 'CTRL|SHIFT', action = act.CloseCurrentPane { confirm = false } },
+  { key = 'q',          mods = 'CTRL|SHIFT', action = act.CloseCurrentTab { confirm = false } },
+  { key = 'h',          mods = 'CMD|SHIFT',  action = SplitPaneDown },
+  { key = 'v',          mods = 'CMD|SHIFT',  action = SplitPaneRight },
+  { key = ',',          mods = 'CMD',        action = RenameTab },
+  { key = 'LeftArrow',  mods = 'CMD',        action = act.ActivateTabRelative(-1) },
+  { key = 'RightArrow', mods = 'CMD',        action = act.ActivateTabRelative(1) },
+  { key = '[',          mods = 'CMD',        action = act.ActivatePaneDirection 'Prev' },
+  { key = ']',          mods = 'CMD',        action = act.ActivatePaneDirection 'Next' },
+}
+
+config.keys = array_merge(base_keys, native_keys)
+-- config.keys = array_merge(base_keys, tmux_keys)
+
+return config
