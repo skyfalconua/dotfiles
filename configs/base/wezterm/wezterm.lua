@@ -17,11 +17,20 @@ if wezterm.config_builder then
   config = wezterm.config_builder()
 end
 
-config.color_scheme         = 'PaulMillr'
-config.default_cursor_style = 'SteadyBar'
-config.font                 =
+config.color_scheme = 'PaulMillr'
+config.colors       = {
+  cursor_bg     = '#ffffff',
+  cursor_border = '#ffffff',
+  split         = '#555555',
+}
+config.default_cursor_style  = 'BlinkingBar'
+config.cursor_blink_ease_in  = "Constant"
+config.cursor_blink_ease_out = "Constant"
+config.cursor_thickness      = "2px"
+
+config.font          =
     wezterm.font_with_fallback { 'Cascadia Code NF', 'JetBrains Mono' }
-config.font_size            = 18
+config.font_size     = 18
 
 config.max_fps       = 120
 config.animation_fps = 120
@@ -41,16 +50,23 @@ config.tab_bar_at_bottom                = false
 config.use_fancy_tab_bar                = false
 
 local function tab_title(tab_info)
-  local title = tab_info.tab_title
-  if title and #title > 0 then
-    return title
-  end
-  return tab_info.active_pane.title
+  local title = tab_info.tab_title or ''
+  if #title > 0 then return title end
+
+  title = tab_info.active_pane.title or ''
+  if #title > 0 then return title end
+
+  local process = tab_info.active_pane.foreground_process_name
+	title =	wezterm.basename(process)
+
+  return title
 end
 
 wezterm.on(
   'format-tab-title',
   function(tab)
+    local is_ssh = tab.active_pane.domain_name:match('^SSH:')
+
     local background = '#5F87AF'
     local foreground = '#000000'
     if tab.is_active then
@@ -65,7 +81,11 @@ wezterm.on(
     if tab.is_active then
       title_prefix = '❱ '
     end
-    local title = title_prefix .. tab_title(tab) .. ' '
+    local title_postfix = ' '
+    if is_ssh then
+      title_postfix = '⋄'
+    end
+    local title = title_prefix .. tab_title(tab) .. title_postfix
 
     return {
       { Background = { Color = edge_background } },
@@ -97,10 +117,8 @@ wezterm.on(
 
 -- Key bindings -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
 
--- Add horizontal (bottom) split
-local SplitPaneDown = act.SplitVertical
--- Add vertical (right) split
-local SplitPaneRight = act.SplitHorizontal
+local SplitPaneDown = act.SplitVertical    -- Add horizontal (bottom) split
+local SplitPaneRight = act.SplitHorizontal -- Add vertical (right) split
 
 local base_keys = {
   -- Unbind / disable defaults
@@ -157,8 +175,8 @@ local native_keys = {
   { key = ',',          mods = 'CMD',        action = RenameTab },
   { key = 'LeftArrow',  mods = 'CMD',        action = act.ActivateTabRelative(-1) },
   { key = 'RightArrow', mods = 'CMD',        action = act.ActivateTabRelative(1) },
-  { key = '[',          mods = 'CMD',        action = act.ActivatePaneDirection 'Prev' },
-  { key = ']',          mods = 'CMD',        action = act.ActivatePaneDirection 'Next' },
+  { key = '[',          mods = 'CMD',        action = act.MoveTabRelative(-1) },
+  { key = ']',          mods = 'CMD',        action = act.MoveTabRelative(1) },
 }
 
 config.keys = array_merge(base_keys, native_keys)

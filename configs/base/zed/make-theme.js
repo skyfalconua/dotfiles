@@ -11,7 +11,14 @@ function* jsoncCharacters(source) {
     if (source[i] === '"') {
       yield source[i++];
       while (i < source.length) {
-        if (source[i] === '\\') { yield source[i++]; yield source[i++]; continue; }
+        if (source[i] === '\\') {
+          yield source[i++]; // backslash
+          const sym = source[i++]; yield sym;
+          if (sym === 'u') { // escaped quote like \u0022
+            for (let j = 0; j < 4; j++) yield source[i++];
+          }
+          continue;
+        }
         if (source[i] === '"') { yield source[i++]; break; }
         yield source[i++];
       }
