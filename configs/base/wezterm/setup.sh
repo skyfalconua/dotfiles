@@ -1,6 +1,6 @@
 #!/bin/sh
-mkdir -p "$HOME/.config/wezterm"
-
-to="$HOME/.config/wezterm/wezterm.lua"
-cp -f "$(pwd)/wezterm.lua" $to
-echo "Created $to"
+to="$HOME/.config/wezterm"
+mkdir -p "$to"
+cp -rf "./."  "$to/."
+rm "$to/setup.sh"
+echo "Copied configs $to"

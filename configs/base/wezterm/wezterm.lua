@@ -1,14 +1,6 @@
 local wezterm = require 'wezterm'
 local act     = wezterm.action
-
--- Utils -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-
-local function array_merge(t1, t2)
-  local result = {}
-  for _, value in ipairs(t1) do table.insert(result, value) end
-  for _, value in ipairs(t2) do table.insert(result, value) end
-  return result
-end
+local utils   = require "utils"
 
 -- Base config -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
@@ -57,7 +49,8 @@ local function tab_title(tab_info)
   if #title > 0 then return title end
 
   local process = tab_info.active_pane.foreground_process_name
-	title =	wezterm.basename(process)
+	title =	process and wezterm.basename(process) or ''
+  title = title or os.getenv('SHELL') or ('tab ' .. tab_info.tab_index)
 
   return title
 end
@@ -115,6 +108,33 @@ wezterm.on(
   end
 )
 
+-- Custom Actions -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+local SidebarYazi = wezterm.action_callback(function(window, pane)
+  local initial_cwd = utils.get_cwd(pane)
+  local last_cwd = initial_cwd
+  local args = { os.getenv('SHELL') or '/bin/zsh', '-lc', 'yazi' }
+
+  utils.open_sidebar(window, pane, args, function(new_pane, is_closed)
+    if is_closed then
+      if last_cwd ~= initial_cwd then
+        pane:send_text("  cd '" .. last_cwd:gsub("'", "\\'") .. "'\n")
+      end
+      return
+    end
+    last_cwd = utils.get_cwd(new_pane)
+  end)
+end)
+
+local RenameTab = act.PromptInputLine {
+  description = 'Enter new name for tab:',
+  action = wezterm.action_callback(function(window, pane, line)
+    if line then
+      window:active_tab():set_title(line)
+    end
+  end),
+}
+
 -- Key bindings -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
 
 local SplitPaneDown = act.SplitVertical    -- Add horizontal (bottom) split
@@ -157,21 +177,13 @@ local tmux_keys = {
   { key = ']',          mods = 'CMD',        action = act.SendString '\x02]' }, -- next tab
 }
 
--- native keys
-local RenameTab = act.PromptInputLine {
-  description = 'Enter new name for tab:',
-  action = wezterm.action_callback(function(window, pane, line)
-    if line then
-      window:active_tab():set_title(line)
-    end
-  end),
-}
 local native_keys = {
   { key = 't',          mods = 'CMD',        action = act.SpawnTab 'CurrentPaneDomain' },
   { key = 'w',          mods = 'CTRL|SHIFT', action = act.CloseCurrentPane { confirm = false } },
   { key = 'q',          mods = 'CTRL|SHIFT', action = act.CloseCurrentTab { confirm = false } },
   { key = 'h',          mods = 'CMD|SHIFT',  action = SplitPaneDown },
   { key = 'v',          mods = 'CMD|SHIFT',  action = SplitPaneRight },
+  { key = 'y',          mods = 'CMD|SHIFT',  action = SidebarYazi },
   { key = ',',          mods = 'CMD',        action = RenameTab },
   { key = 'LeftArrow',  mods = 'CMD',        action = act.ActivateTabRelative(-1) },
   { key = 'RightArrow', mods = 'CMD',        action = act.ActivateTabRelative(1) },
@@ -179,7 +191,7 @@ local native_keys = {
   { key = ']',          mods = 'CMD',        action = act.MoveTabRelative(1) },
 }
 
-config.keys = array_merge(base_keys, native_keys)
+config.keys = utils.array_merge(base_keys, native_keys)
 -- config.keys = array_merge(base_keys, tmux_keys)
 
 return config
