@@ -1,0 +1,215 @@
+{
+  "$schema": "https://www.schemastore.org/claude-code-settings.json",
+  "theme": "dark",
+  "permissions": {
+    "disableBypassPermissionsMode": "disable",
+    "disableAutoMode": "disable",
+
+    "deny": [
+      "Read(**/_local.zsh)",
+
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/.envrc)",
+      "Edit(**/.env)",
+      "Edit(**/.env.*)",
+      "Edit(**/.envrc)",
+
+      "Bash(cat .env)",
+      "Bash(cat .env*)",
+      "Bash(cat *.env*)",
+      "Bash(cat **/.env*)",
+
+      "Read(**/secrets/*)",
+      "Read(**/secret/*)",
+      "Read(**/.secrets/*)",
+      "Edit(**/secrets/*)",
+      "Edit(**/secret/*)",
+      "Edit(**/.secrets/*)",
+
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(**/*.p12)",
+      "Read(**/*.pfx)",
+      "Read(**/*.cer)",
+      "Read(**/*.crt)",
+      "Read(**/*.kdbx)",
+      "Read(**/*.age)",
+      "Read(**/*.sops.yaml)",
+
+      "Edit(**/*.pem)",
+      "Edit(**/*.key)",
+      "Edit(**/*.p12)",
+      "Edit(**/*.pfx)",
+      "Edit(**/*.age)",
+      "Edit(**/*.sops.yaml)",
+
+      "Read(**/.ssh/*)",
+      "Edit(**/.ssh/*)",
+      "Read(**/.gnupg/*)",
+      "Edit(**/.gnupg/*)",
+
+      "Bash(cat ~/.ssh/*)",
+
+      "Read(**/.aws/credentials)",
+      "Read(**/.aws/config)",
+      "Read(**/.gcloud/*)",
+      "Read(**/.azure/*)",
+
+      "Edit(**/.aws/credentials)",
+      "Edit(**/.aws/config)",
+      "Edit(**/.gcloud/*)",
+      "Edit(**/.azure/*)",
+
+      "Bash(cat ~/.aws/*)",
+
+      "Read(**/.docker/config.json)",
+      "Read(**/.kube/config)",
+      "Read(**/kubeconfig)",
+
+      "Edit(**/.docker/config.json)",
+      "Edit(**/.kube/config)",
+
+      "Read(**/terraform.tfvars)",
+      "Read(**/*.tfstate)",
+      "Read(**/*.tfstate.backup)",
+      "Read(**/.vault-token)",
+
+      "Edit(**/terraform.tfvars)",
+      "Edit(**/*.tfstate)",
+
+      "Read(**/.npmrc)",
+      "Read(**/.pypirc)",
+      "Read(**/.netrc)",
+      "Read(**/.gem/credentials)",
+      "Read(**/.git-credentials)",
+
+      "Edit(**/.npmrc)",
+      "Edit(**/.pypirc)",
+      "Edit(**/.netrc)",
+      "Edit(**/.git-credentials)",
+
+      "Read(**/.direnv/*)",
+      "Edit(**/.direnv/*)",
+
+      "Read(**/group_vars/*)",
+      "Read(**/host_vars/*)",
+      "Edit(**/group_vars/*)",
+      "Edit(**/host_vars/*)",
+
+      "Read(**/.session)",
+      "Read(**/.tokens)",
+      "Read(**/*.sqlite)",
+      "Read(**/*.db)",
+
+      "Read(**/.bash_history)",
+      "Read(**/.zsh_history)",
+      "Read(**/.sh_history)",
+
+      "Bash(history)",
+      "Bash(cat ~/.bash_history)",
+      "Bash(cat ~/.zsh_history)",
+
+      "Bash(env)",
+      "Bash(env *)",
+      "Bash(printenv)",
+      "Bash(printenv *)",
+      "Bash(export *)",
+      "Bash(declare *)",
+      "Bash(declare -x*)",
+
+      "Bash(set -o*)",
+
+      "Bash(sudo *)",
+      "Bash(su *)",
+      "Bash(doas *)",
+
+      "Bash(rm -rf *)",
+      "Bash(rm -fr *)",
+      "Bash(shred *)",
+      "Bash(mkfs *)",
+      "Bash(dd if=*)",
+
+      "Bash(curl * | *)",
+      "Bash(wget * | *)",
+      "Bash(curl *|*)",
+      "Bash(wget *|*)",
+
+      "Bash(nc *)",
+      "Bash(ncat *)",
+      "Bash(socat *)",
+      "Bash(curl -F *)",
+
+      "Bash(chmod 777 *)",
+
+      "Bash(npm publish *)",
+      "Bash(yarn publish *)",
+      "Bash(pip upload *)",
+      "Bash(twine upload *)",
+
+      "Bash(git push --force *)",
+      "Bash(git push * --force)"
+    ],
+
+    "ask": [
+      "Edit(.github/workflows/*)",
+      "Edit(.gitlab-ci.yml)",
+      "Edit(.circleci/*)",
+      "Edit(Jenkinsfile)",
+
+      "Edit(*.env.example)",
+      "Edit(*.env.sample)",
+      "Edit(*.env.template)",
+
+      "Bash(bash *)",
+      "Bash(sh *)",
+      "Bash(zsh *)",
+
+      "Bash(chmod *)",
+      "Bash(chown *)",
+
+      "Bash(git push *)",
+      "Bash(git remote add *)",
+      "Bash(git config --list*)",
+
+      "Bash(scp *)",
+      "Bash(rsync *)",
+
+      "Bash(grep *password*)",
+      "Bash(grep *secret*)",
+      "Bash(grep *token*)",
+
+      "Bash(set)",
+    ],
+
+    "allow": [
+      "Read(*.env.example)",
+      "Read(*.env.sample)",
+      "Read(*.env.template)",
+      "Read(*.env.schema)",
+
+      "Bash(git status)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(git branch *)",
+
+      "Bash(npm test *)",
+      "Bash(npm run lint *)",
+      "Bash(npm run build *)",
+      "Bash(npm run typecheck *)",
+
+      "Bash(ls)",
+      "Bash(ls *)",
+      "Bash(pwd)",
+      "Bash(echo *)",
+      "Bash(cat package.json)"
+    ]
+  },
+  "model": "haiku",
+  "statusLine": {
+    "type": "command",
+    "command": "jq -rf ~/.claude/statusline.jq"
+  }
+}

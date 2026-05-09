@@ -1,0 +1,258 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  "permission": {
+    "*": "ask",
+
+    "doom_loop": "deny",
+    "external_directory": "deny",
+
+    // ─────────────────────────────────────────────────────────────
+    // READ
+    // ─────────────────────────────────────────────────────────────
+    "read": {
+      "*": "allow",
+
+      // Local config
+      "**/_local.zsh": "deny",
+
+      // Env files
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "**/.env": "deny",
+      "**/.env.*": "deny",
+      "**/.envrc": "deny",
+
+      // Secret directories
+      "**/secrets/**": "deny",
+      "**/secret/**": "deny",
+      "**/.secrets/**": "deny",
+
+      // Certificates & crypto
+      "**/*.pem": "deny",
+      "**/*.key": "deny",
+      "**/*.p12": "deny",
+      "**/*.pfx": "deny",
+      "**/*.cer": "deny",
+      "**/*.crt": "deny",
+      "**/*.kdbx": "deny",
+      "**/*.age": "deny",
+      "**/*.sops.yaml": "deny",
+
+      // SSH / GPG
+      "**/.ssh/**": "deny",
+      "**/id_rsa": "deny",
+      "**/id_rsa.pub": "deny",
+      "**/id_ed25519": "deny",
+      "**/id_ed25519.pub": "deny",
+      "**/.gnupg/**": "deny",
+
+      // Cloud credentials
+      "**/.aws/credentials": "deny",
+      "**/.aws/config": "deny",
+      "**/.gcloud/**": "deny",
+      "**/.azure/**": "deny",
+
+      // Containers / orchestration
+      "**/.docker/config.json": "deny",
+      "**/.kube/config": "deny",
+      "**/kubeconfig": "deny",
+
+      // Terraform / Vault
+      "**/terraform.tfvars": "deny",
+      "**/*.tfstate": "deny",
+      "**/*.tfstate.backup": "deny",
+      "**/.vault-token": "deny",
+
+      // Package manager auth
+      "**/.npmrc": "deny",
+      "**/.pypirc": "deny",
+      "**/.netrc": "deny",
+      "**/.gem/credentials": "deny",
+
+      // Git credentials
+      "**/.git-credentials": "deny",
+
+      // direnv
+      "**/.direnv/**": "deny",
+
+      // Ansible
+      "**/group_vars/**": "deny",
+      "**/host_vars/**": "deny",
+
+      // Local sessions/tokens
+      "**/.session": "deny",
+      "**/.tokens": "deny",
+
+      // Databases
+      "**/*.sqlite": "deny",
+      "**/*.db": "deny",
+
+      // Shell history
+      "**/.bash_history": "deny",
+      "**/.zsh_history": "deny",
+      "**/.sh_history": "deny",
+
+      // Safe templates
+      "*.env.example": "allow",
+      "*.env.sample": "allow",
+      "*.env.template": "allow",
+      "*.env.schema": "allow"
+    },
+
+    // ─────────────────────────────────────────────────────────────
+    // EDIT
+    // ─────────────────────────────────────────────────────────────
+    "edit": {
+      "*": "ask",
+
+      // Env / secrets
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "**/.env": "deny",
+      "**/.env.*": "deny",
+      "**/.envrc": "deny",
+
+      "**/secrets/**": "deny",
+      "**/secret/**": "deny",
+
+      // Crypto / certs
+      "**/*.pem": "deny",
+      "**/*.key": "deny",
+      "**/*.p12": "deny",
+      "**/*.pfx": "deny",
+      "**/*.age": "deny",
+      "**/*.sops.yaml": "deny",
+
+      // SSH / cloud creds
+      "**/.ssh/**": "deny",
+      "**/.aws/credentials": "deny",
+      "**/.kube/config": "deny",
+      "**/.git-credentials": "deny",
+
+      // Terraform
+      "**/terraform.tfvars": "deny",
+      "**/*.tfstate": "deny",
+
+      // Package auth
+      "**/.npmrc": "deny",
+
+      // Local config
+      "**/_local.zsh": "deny",
+
+      // CI/CD
+      ".github/workflows/**": "ask",
+      ".gitlab-ci.yml": "ask",
+      ".circleci/**": "ask",
+      "Jenkinsfile": "ask",
+
+      // Safe templates
+      "*.env.example": "allow",
+      "*.env.sample": "allow",
+      "*.env.template": "allow"
+    },
+
+    // ─────────────────────────────────────────────────────────────
+    // BASH
+    // ─────────────────────────────────────────────────────────────
+    "bash": {
+      "*": "ask",
+
+      // Privilege escalation
+      "sudo *": "deny",
+      "su *": "deny",
+      "doas *": "deny",
+
+      // Destructive FS ops
+      "rm -rf *": "deny",
+      "rm -fr *": "deny",
+      "shred *": "deny",
+      "mkfs *": "deny",
+      "dd if=*": "deny",
+
+      // Env dumping
+      "env": "deny",
+      "env *": "deny",
+      "printenv*": "deny",
+      "printenv *": "deny",
+      "export*": "deny",
+      "declare *": "deny",
+      "declare -x*": "deny",
+
+      // Avoid breaking scripts using set -e/-u
+      "set": "ask",
+      "set -o*": "deny",
+
+      // Reading secret files
+      "cat *.env*": "deny",
+      "cat **/.env*": "deny",
+      "cat ~/.ssh/*": "deny",
+      "cat ~/.aws/*": "deny",
+      "cat ~/.netrc": "deny",
+
+      // History
+      "history": "deny",
+      "cat ~/.bash_history": "deny",
+      "cat ~/.zsh_history": "deny",
+
+      // Secret searches
+      "grep *password*": "ask",
+      "grep *secret*": "ask",
+      "grep *token*": "ask",
+
+      // Pipe-to-shell
+      "curl * | *": "deny",
+      "wget * | *": "deny",
+      "curl *|*": "deny",
+      "wget *|*": "deny",
+
+      // Exfiltration vectors
+      "nc *": "deny",
+      "ncat *": "deny",
+      "socat *": "deny",
+      "scp *": "ask",
+      "rsync *": "ask",
+      "curl -F *": "deny",
+
+      // Shell execution
+      "bash *": "ask",
+      "sh *": "ask",
+      "zsh *": "ask",
+
+      // Permission abuse
+      "chmod 777 *": "deny",
+      "chmod a+x *": "ask",
+      "chown *": "ask",
+
+      // Publishing / pushing
+      "npm publish*": "deny",
+      "yarn publish*": "deny",
+      "pip upload*": "deny",
+      "twine upload*": "deny",
+      "git push --force*": "deny",
+      "git remote add *": "ask",
+      "git config --list*": "ask",
+
+      // Safe git read-only
+      "git status": "allow",
+      "git status *": "allow",
+      "git diff*": "allow",
+      "git log*": "allow",
+      "git show*": "allow",
+      "git branch*": "allow",
+
+      // Safe node scripts
+      "npm test*": "allow",
+      "npm run lint*": "allow",
+      "npm run build*": "allow",
+      "npm run typecheck*": "allow",
+
+      // Safe navigation
+      "ls": "allow",
+      "ls *": "allow",
+      "pwd": "allow",
+      "echo *": "allow",
+      "cat package.json": "allow"
+    }
+  }
+}

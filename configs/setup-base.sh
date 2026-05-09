@@ -10,6 +10,6 @@ _setup tmux
 _setup htop
 _setup yazi
 _setup zed
-_setup ghostty
+_setup wezterm
 
 unset _setup
