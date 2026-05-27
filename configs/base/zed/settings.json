@@ -15,10 +15,6 @@
   // Details about premium requests
   //   https://docs.github.com/en/copilot/concepts/billing/copilot-requests
 
-  "features": {
-    "edit_prediction_provider": "none",
-    // "edit_prediction_provider": "copilot",
-  },
   "edit_predictions": {
     "mode": "subtle",
   },
@@ -104,9 +100,6 @@
     "show_nav_history_buttons": false,
   },
   "collaboration_panel": {
-    "button": false,
-  },
-  "notification_panel": {
     "button": false,
   },
   "toolbar": {

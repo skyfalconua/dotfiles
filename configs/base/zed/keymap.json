@@ -1,4 +1,5 @@
 [
+  // -- Basic  -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   {
     "bindings": {
       "cmd-t": "workspace::NewCenterTerminal",
@@ -12,5 +13,119 @@
       "cmd-shift-d": "editor::DuplicateLineDown",
       "cmd-r": "search::ToggleReplace"
     }
-  }
+  },
+
+  // -- Sidebar :: Toggle  -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
+  {
+    "context": "Workspace",
+    "unbind": {
+      "cmd-b": "workspace::ToggleLeftDock"
+    }
+  },
+  {
+    "context": "Workspace",
+    "unbind": {
+      "cmd-k cmd-b": "workspace::ToggleLeftDock"
+    }
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "cmd-b cmd-t": "workspace::ToggleLeftDock"
+    }
+  },
+
+  // -- Sidebar :: Threads  -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
+  {
+    "context": "Workspace",
+    "unbind": {
+      "alt-cmd-j": "multi_workspace::ToggleWorkspaceSidebar"
+    }
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "cmd-b cmd-j": "multi_workspace::ToggleWorkspaceSidebar"
+    }
+  },
+
+  // -- Sidebar :: Agent  -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- - -
+  {
+    "context": "Workspace",
+    "unbind": {
+      "cmd-?": "agent::ToggleFocus"
+    }
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "cmd-b cmd-a": "agent::ToggleFocus"
+    }
+  },
+
+  // -- Sidebar :: Project Explorer -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+  {
+    "context": "Workspace",
+    "unbind": {
+      "cmd-shift-e": "project_panel::ToggleFocus"
+    }
+  },
+  {
+    "context": "AgentPanel",
+    "unbind": {
+      "cmd-shift-e": "project_panel::ToggleFocus"
+    }
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "cmd-b cmd-e": "project_panel::ToggleFocus"
+    }
+  },
+  {
+    "context": "AgentPanel",
+    "bindings": {
+      "cmd-b cmd-e": "project_panel::ToggleFocus"
+    }
+  },
+
+  // -- Sidebar :: Git  -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+  {
+    "context": "Workspace",
+    "bindings": {
+      "cmd-b cmd-g": "git_panel::ToggleFocus"
+    }
+  },
+  {
+    "context": "Workspace",
+    "unbind": {
+      "ctrl-shift-g": "git_panel::ToggleFocus"
+    }
+  },
+
+  // -- Sidebar :: Outline  -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
+  {
+    "context": "Workspace",
+    "bindings": {
+      "cmd-b cmd-o": "outline_panel::ToggleFocus"
+    }
+  },
+  {
+    "context": "Workspace",
+    "unbind": {
+      "cmd-shift-b": "outline_panel::ToggleFocus"
+    }
+  },
+
+  // -- LSP menu -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- - -
+  {
+    "unbind": {
+      "ctrl-cmd-l": "lsp_tool::ToggleMenu"
+    }
+  },
+  {
+    "bindings": {
+      "cmd-shift-l": "lsp_tool::ToggleMenu"
+    }
+  },
 ]
