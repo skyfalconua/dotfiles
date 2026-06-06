@@ -20,7 +20,7 @@ git clone https://github.com/skyfalconua/dotfiles.git ~/.dotfiles
 #### 2. update ~/.zshrc
 ```sh
 echo 'source ~/.dotfiles/zsh/init.zsh' > ~/.zshrc && \
-touch ~/.dotfiles/zsh/_local.zsh
+touch ~/.dotfiles/.local/_local.zsh
 ```
 
 #### 3. copy configs
@@ -38,5 +38,5 @@ echo 'source ~/.dotfiles/fish/init.fish' > ~/.config/fish/config.fish
 #### 5. (optional) misc
 ```sh
 # starship prompt
-echo 'eval "$(starship init zsh)"' >> ~/.dotfiles/zsh/_local.zsh
+echo 'eval "$(starship init zsh)"' >> ~/.dotfiles/.local/_local.zsh
 ```

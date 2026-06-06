@@ -41,5 +41,5 @@ Host YOUR-SERVER
 echo "set -g default-terminal xterm-256color" >> ~/.tmux.conf
 
 # 4. or failback in zsh
-echo "export TERM=xterm-256color" >> ~/.dotfiles/zsh/_local.zsh
+echo "export TERM=xterm-256color" >> ~/.dotfiles/.local/_local.zsh
 ```

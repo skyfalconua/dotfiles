@@ -32,14 +32,6 @@ elif command -v entr &>/dev/null; then
   alias syncto="dfb-syncto-entr"
 fi
 
-podman-machine-update() {
-  if [ -z "$1" ]; then
-    echo "usage: podman-machine-update x.y"
-    return
-  fi
-  podman machine os apply "quay.io/podman/machine-os:$1"
-}
-
 str-lower() {
   awk '{print tolower($0)}'
 }
@@ -141,21 +133,6 @@ dfb-var() {
   fi
 }
 
-s3put() {
-  if [ -z "$S3_DEFAULT_BUCKET" ]; then
-    echo "Please set $S3_DEFAULT_BUCKET variable"
-    return
-  fi
-
-  local filename="$1"
-  if [ -z "$filename" ]; then
-    echo "Usage: s3put somefile.png"
-    return
-  fi
-
-  s3cmd put --acl-public --guess-mime-type $filename $S3_DEFAULT_BUCKET
-}
-
 kill-by-grep() {
   local process_name="$1"
 
@@ -165,14 +142,6 @@ kill-by-grep() {
   fi
 
   ps aux | grep "$process_name" | grep -v grep | awk '{print $2}' | xargs kill -9
-}
-
-rsng() {
-  if [ $# -lt 2 ]; then
-    echo "Usage: rsng <src> <dst> [any-rsync-option]" && return
-  fi
-  rsync --archive --recursive --update --perms \
-    --compress --verbose --progress --exclude='.git/' "$@"
 }
 
 jt() {

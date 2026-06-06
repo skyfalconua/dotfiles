@@ -51,6 +51,3 @@ path-prepend "$HOME/.dotfiles/bin"
 #   export PATH="$GNUBINS$PATH"
 #   export MANPATH="$GNUMANPATH$MANPATH"
 # fi
-
-# optional config
-[ -s "$HOME/.dotfiles/zsh/_local.zsh" ] && source "$HOME/.dotfiles/zsh/_local.zsh"
