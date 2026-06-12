@@ -1,0 +1,52 @@
+providers:
+  - name: "opencode-go"
+    api_key: "sk-"
+    models:
+      - name: "minimax-m3"
+        add_to_favorite: true
+      - name: "kimi-k2.6"
+        add_to_favorite: true
+      - name: "deepseek-v4-flash"
+        add_to_favorite: true
+      - name: "qwen3.7-plus"
+        add_to_favorite: true
+
+  - name: "openrouter"
+    api_key: "sk-or-v1-"
+    models:
+      - name: "openrouter/free"
+        add_to_favorite: true
+
+  - name: "cloudflare-workers-ai"
+    api_key: "cfut_"
+    metadata:
+      accountId: "1234567890abcdef"
+    models:
+      - name: "@cf/zai-org/glm-4.7-flash"
+        add_to_favorite: true
+
+  - name: "nvidia"
+    api_key: "nvapi-"
+    models:
+      - name: "nvidia/nemotron-3-super-120b-a12b"
+        add_to_favorite: true
+
+  - name: "cerebras"
+    api_key: "csk-"
+    models:
+      - name: "gpt-oss-120b"
+        add_to_favorite: true
+
+  - name: "zai-coding-plan"
+    api_key: "1234567890.abcdef"
+    models:
+      - name: "glm-5.1"
+        add_to_favorite: true
+      - name: "glm-4.5-air"
+        add_to_favorite: false
+
+  - name: "huggingface"
+    api_key: "hf_"
+    models:
+      - name: "Qwen/Qwen3-Coder-Next"
+        add_to_favorite: true

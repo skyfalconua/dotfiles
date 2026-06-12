@@ -1,0 +1,11 @@
+#!/bin/sh
+
+model="$1"
+if [ -z "$model" ]; then
+  echo "Usage: dfb-ccr-start <model> [claude-args...]" && exit
+fi
+shift
+
+eval "$(ccr activate)"
+eval "$(dfb-coding-helpers claude-env "$model")"
+claude --model "${ANTHROPIC_DEFAULT_SONNET_MODEL}" $*

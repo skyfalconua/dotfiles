@@ -1,0 +1,196 @@
+#!/usr/bin/env -S deno run -A
+// @ts-nocheck
+import { parse as yamlParse } from "jsr:@std/yaml";
+
+const HOME = Deno.env.get("HOME");
+
+const cfBase = 'https://api.cloudflare.com/client/v4/accounts';
+const cloudflareUrl = metadata => `${cfBase}/${metadata?.accountId || ''}/ai/v1/chat/completions`
+
+const OPENAI_URLS = {
+  "cerebras": "https://api.cerebras.ai/v1/chat/completions",
+  "cloudflare-workers-ai": cloudflareUrl,
+  "huggingface": "https://router.huggingface.co/v1/chat/completions",
+  "nvidia": "https://integrate.api.nvidia.com/v1/chat/completions",
+  "opencode-go": "https://opencode.ai/zen/go/v1/chat/completions",
+  "openrouter": "https://openrouter.ai/api/v1/chat/completions",
+  "zai-coding-plan": "https://api.z.ai/api/coding/paas/v4/chat/completions",
+};
+
+// -- Utils -- -- --
+
+const loadYaml = (path) => {
+  try { return yamlParse(Deno.readTextFileSync(path)); }
+  catch { console.error(`Unable to read ${path}`); }
+};
+
+const loadJson = (path) => {
+  try { return JSON.parse(Deno.readTextFileSync(path)); }
+  catch { console.log(`Unable to read ${path}`); }
+};
+
+const saveJson = (path, data) => Deno.writeTextFileSync(path, JSON.stringify(data, null, 2));
+
+// -- Core mapping functions for each destination config -- -- --
+
+function getClaudeRouterConfig(sharedConfig, routerConfig) {
+  const destProviders = [];
+
+  for (const provider of sharedConfig.providers) {
+    const name = provider.name || "";
+    const getUrl = OPENAI_URLS[name];
+    const api_base_url = typeof getUrl === "function" ? getUrl(provider.metadata) : getUrl;
+    const api_key = provider.api_key || "";
+    const models = (provider.models || []).map(m => m.name).filter(Boolean);
+
+    if (!name || !api_base_url || !api_key) continue;
+
+    destProviders.push({ name, api_base_url, api_key, models });
+  }
+
+  return { ...routerConfig, Providers: destProviders };
+}
+
+function getOpenCodeAuthConfig(sharedConfig, authConfig) {
+  const newAuth = {};
+
+  for (const provider of sharedConfig.providers) {
+    const name = provider.name || "";
+    if (!name) continue;
+
+    newAuth[name] = { type: "api", key: provider.api_key || "" };
+
+    if (provider.metadata) newAuth[name].metadata = provider.metadata;
+  }
+
+  return { ...authConfig, ...newAuth };
+}
+
+function getOpenCodeFavorites(sharedConfig, modelConfig) {
+  const newFavorites = [];
+
+  for (const provider of sharedConfig.providers) {
+    const models = (provider.models || []).filter(m => m.add_to_favorite);
+    for (const model of models) {
+      if (provider.name && model.name) {
+        newFavorites.push({
+          providerID: provider.name,
+          modelID: model.name,
+        });
+      }
+    }
+  }
+
+  return { ...modelConfig, favorite: newFavorites };
+}
+
+// -- Read read and merge config files -- -- --
+
+function getSharedConfig() {
+  const configPath = `${HOME}/.dotfiles/.local/coding-helpers.yaml`;
+  const sharedConfig = loadYaml(configPath);
+  if (!sharedConfig) return;
+
+  const providers = sharedConfig.providers
+    .filter(p => !p.skip)
+    .sort((a, b) => (a.name || '').localeCompare(b.name));
+  return { ...sharedConfig, providers };
+}
+
+function updateOpenCodeAuthConfig(sharedConfig) {
+  const authConfigPath = `${HOME}/.local/share/opencode/auth.json`;
+  const authConfig = loadJson(authConfigPath);
+  if (!authConfig) return;
+
+  console.log(`Updating: ${authConfigPath}`);
+  saveJson(authConfigPath, getOpenCodeAuthConfig(sharedConfig, authConfig));
+}
+
+function updateOpenCodeFavorites(sharedConfig) {
+  const modelConfigPath = `${HOME}/.local/state/opencode/model.json`;
+  const modelConfig = loadJson(modelConfigPath);
+  if (!modelConfig) return;
+
+  console.log(`Updating: ${modelConfigPath}`);
+  saveJson(modelConfigPath, getOpenCodeFavorites(sharedConfig, modelConfig));
+}
+
+function updateClaudeRouterConfig(sharedConfig) {
+  const routerConfigPath = `${HOME}/.claude-code-router/config.json`;
+  const routerConfig = loadJson(routerConfigPath);
+  if (!routerConfig) return;
+
+  console.log(`Updating: ${routerConfigPath}`);
+  saveJson(routerConfigPath, getClaudeRouterConfig(sharedConfig, routerConfig));
+}
+
+// -- Misc utils -- -- --
+
+function getModelsList(print = false) {
+  const sharedConfig = getSharedConfig();
+  if (!sharedConfig) return [];
+
+  const models = [];
+  for (const provider of sharedConfig.providers) {
+    const name = provider.name || "";
+    if (!name) continue;
+
+    for (const model of provider.models || []) {
+      if (model.name) models.push(`${name},${model.name}`);
+    }
+  }
+
+  if (print) {
+    console.log("Available models:");
+    for (const model of models) {
+      console.log(`- ${model}`);
+    }
+  }
+
+  return models;
+}
+
+function printClaudeEnv(model) {
+  const models = getModelsList();
+  const isFound = models.includes(model);
+
+  if (!isFound) {
+    console.log(`echo "warning: model ${model} not found"`);
+  };
+  const finalModel = isFound ? model : '';
+
+  console.log(`export ANTHROPIC_DEFAULT_HAIKU_MODE="${finalModel}"`);
+  console.log(`export ANTHROPIC_DEFAULT_SONNET_MODEL="${finalModel}"`);
+  console.log(`export ANTHROPIC_DEFAULT_OPUS_MODEL="${finalModel}"`);
+}
+
+// -- Main -- -- --
+
+const ACTION = {
+  OpenCode: "update-opencode-config",
+  CCR: "update-ccr-config",
+  ListModels: "list-models",
+  ClaudeEnv: "claude-env",
+};
+
+function main(action) {
+  const sharedConfig = getSharedConfig();
+  if (!sharedConfig) return;
+
+  if (action === ACTION.OpenCode) {
+    updateOpenCodeAuthConfig(sharedConfig);
+    updateOpenCodeFavorites(sharedConfig);
+    console.log("Updated OpenCode auth and favorites configs.");
+  } else if (action === ACTION.CCR) {
+    updateClaudeRouterConfig(sharedConfig);
+    console.log("Updated Claude Code Router config.");
+  } else if (action === ACTION.ListModels) {
+    getModelsList(true);
+  } else if (action === ACTION.ClaudeEnv) {
+    printClaudeEnv(Deno.args[1]);
+  } else {
+    console.error(`Available actions: ${Object.values(ACTION).join(", ")}`);
+  }
+}
+
+main(Deno.args[0]);
