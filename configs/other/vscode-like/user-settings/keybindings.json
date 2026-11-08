@@ -1,11 +1,21 @@
 [
-  // -- transform cases -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+  // -- transform to kebab-case -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- - -
   {
     "key": "cmd+k cmd+-",
+    "when": "isMac",
     "command": "editor.action.transformToKebabcase",
+
   },
   {
+    "key": "ctrl+k ctrl+-",
+    "when": "isWindows",
+    "command": "editor.action.transformToKebabcase",
+  },
+
+  // -- transform to Pascalcase -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- - -
+  {
     "key": "cmd+k cmd+p",
+    "when": "isMac",
     "command": "runCommands",
     "args": {
       "commands": [
@@ -15,7 +25,21 @@
     }
   },
   {
+    "key": "ctrl+k ctrl+p",
+    "when": "isWindows",
+    "command": "runCommands",
+    "args": {
+      "commands": [
+        "editor.action.transformToKebabcase",
+        "editor.action.transformToPascalcase",
+      ]
+    }
+  },
+
+  // -- transform to lowerCamelcase -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+  {
     "key": "cmd+k cmd+m",
+    "when": "isMac",
     "command": "runCommands",
     "args": {
       "commands": [
@@ -25,7 +49,32 @@
     }
   },
   {
+    "key": "ctrl+k ctrl+m",
+    "when": "isWindows",
+    "command": "runCommands",
+    "args": {
+      "commands": [
+        "editor.action.transformToKebabcase",
+        "editor.action.transformToCamelcase",
+      ]
+    }
+  },
+
+  // -- transform to UPPER_SNAKE_CASE -- -- -- -- -- -- -- -- -- -- -- -- -- - -
+  {
     "key": "cmd+k cmd+=",
+    "when": "isMac",
+    "command": "runCommands",
+    "args": {
+      "commands": [
+        "editor.action.transformToSnakecase",
+        "editor.action.transformToUppercase",
+      ]
+    }
+  },
+  {
+    "key": "ctrl+k ctrl+=",
+    "when": "isWindows",
     "command": "runCommands",
     "args": {
       "commands": [
@@ -37,7 +86,11 @@
 
   // -- remove default zooming -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
   {
-    "key": "cmd+numpad0",
+    "key": "cmd+0",
+    "command": "-workbench.action.zoomReset"
+  },
+  {
+    "key": "ctrl+0",
     "command": "-workbench.action.zoomReset"
   },
   {
@@ -45,21 +98,33 @@
     "command": "-workbench.action.zoomIn"
   },
   {
+    "key": "ctrl+=",
+    "command": "-workbench.action.zoomIn"
+  },
+  {
     "key": "cmd+-",
+    "command": "-workbench.action.zoomOut"
+  },
+  {
+    "key": "ctrl+-",
     "command": "-workbench.action.zoomOut"
   },
 
   // -- add the same but with shift default zooming -- -- -- -- -- -- -- -- -- -
   {
-    "key": "shift+cmd+0",
+    "key": "cmd+shift+0",
     "command": "workbench.action.zoomReset"
   },
   {
-    "key": "shift+cmd+=",
+    "key": "ctrl+shift+0",
+    "command": "workbench.action.zoomReset"
+  },
+  {
+    "key": "cmd+shift+=",
     "command": "workbench.action.zoomIn"
   },
   {
-    "key": "shift+cmd+-",
+    "key": "cmd+shift+-",
     "command": "workbench.action.zoomOut"
   },
 
@@ -75,9 +140,20 @@
   {
     "key": "cmd+t",
     "command": "workbench.action.createTerminalEditor",
+    "when": "isMac"
+  },
+  // - windows
+  {
+    "key": "ctrl+alt+t",
+    "command": "-io.orta.jest.editor.run-all-tests",
+  },
+  {
+    "key": "ctrl+alt+t",
+    "when": "isWindows",
+    "command": "workbench.action.createTerminalEditor",
   },
 
-  // -- new terminal in tab -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
+  // -- command runner -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- - -
   {
     "key": "ctrl+shift+r",
     "command": "-command-runner.run"
@@ -88,7 +164,17 @@
   },
   {
     "key": "cmd+alt+p",
-    "command": "command-runner.run"
+    "command": "command-runner.run",
+    "when": "isMac"
   },
-
+  // - windows
+  {
+    "key": "ctrl+alt+p",
+    "command": "-svgPreview.showPreviewToSide",
+  },
+  {
+    "key": "ctrl+alt+p",
+    "command": "command-runner.run",
+    "when": "isWindows"
+  },
 ]

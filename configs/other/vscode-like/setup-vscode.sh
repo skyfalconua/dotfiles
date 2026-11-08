@@ -1,6 +1,7 @@
 #!/bin/sh
 
 APPNAME="Code"
+SCRIPTNAME=$(basename "$0")
 
 # -- read parameters -- -- --
 
@@ -43,7 +44,7 @@ elif [ ! -d "$userdir" ]; then
   mkdir "$userdir"
 else
   echo "note: to replace settings run:"
-  echo "  bash setup.sh --replace"
+  echo "  bash ${SCRIPTNAME} --replace"
 fi
 
 cp -rf ./user-settings/* "${userdir}"
